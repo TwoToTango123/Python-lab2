@@ -1,1 +1,0 @@
-COMMANDS_ALPH = ['ls', 'rm', 'mv', 'cp', 'cat', 'cd']

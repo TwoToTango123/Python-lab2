@@ -1,24 +1,12 @@
 import os
 import time
-import logging
-
-logging.basicConfig(
-    level=logging.ERROR,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('shell.log', encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger('cd_command')
-
+from src.logger import *
 def format_date(timestamp):
     """Форматирует дату в удобный формат"""
     return time.strftime('%b %d %H:%M', time.localtime(timestamp))
 
 def expand_path(path):
     """Расширяет специальные символы в пути (~, .., .)"""
-    # Обработка домашней директории ~
     if path == '~' or path.startswith('~/'):
         home_dir = os.path.expanduser('~')
         if path == '~':
@@ -26,7 +14,6 @@ def expand_path(path):
         else:
             return os.path.join(home_dir, path[2:])
     
-    # Обработка относительных путей
     if path.startswith('../'):
         return os.path.abspath(os.path.join(os.getcwd(), path))
     elif path == '..':
@@ -41,27 +28,19 @@ def expand_path(path):
 def change_directory(path):
     """Реализация команды cd с поддержкой специальных символов и логированием"""
     try:
-        # Расширяем специальные символы в пути
         expanded_path = expand_path(path)
         
-        # Проверяем существование каталога
         if not os.path.exists(expanded_path):
             print(f"cd: {path}: No such file or directory")
             logger.error(f"Failed cd attempt: {path} -> {expanded_path} - Directory not found")
             return False
         
-        # Проверяем что это именно каталог, а не файл
         if not os.path.isdir(expanded_path):
             print(f"cd: {path}: Not a directory")
             logger.error(f"Failed cd attempt: {path} -> {expanded_path} - Not a directory")
             return False
         
-        # Пытаемся сменить директорию
-        old_dir = os.getcwd()
         os.chdir(expanded_path)
-        new_dir = os.getcwd()
-        
-        print(f"Перешел в: {new_dir}")
         return True
         
     except PermissionError:
@@ -72,3 +51,11 @@ def change_directory(path):
         print(f"cd: {path}: {e}")
         logger.error(f"Failed cd attempt: {path} - {str(e)}")
         return False
+    
+def parse_cd_command(user_input):
+    """Парсит команду cd и возвращает путь"""
+    parts = user_input.strip().split()
+    if len(parts) < 2:
+        return "~"
+    
+    return parts[1]

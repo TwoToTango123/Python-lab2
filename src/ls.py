@@ -1,6 +1,7 @@
 import os
 import time
-from exceptions import *
+from src.exceptions import *
+
 def get_file_type(file_path):
     """Определяет тип файла и возвращает соответствующий символ"""
     if os.path.islink(file_path):
@@ -31,7 +32,7 @@ def get_permissions(file_path):
         permissions += 'x' if stat_info.st_mode & 0o001 else '-'
         
         return permissions
-    except:
+    except Exception:
         return '?????????'
 
 def format_size(size):
@@ -43,7 +44,7 @@ def format_size(size):
             else:
                 return f"{size:4.1f} {unit}"
         size /= 1024.0
-    return f"{size:4.1f} P"
+    return f"{1024.0 * size:4.1f} T"
 
 def format_date(timestamp):
     """Форматирует дату в удобный формат"""
@@ -86,38 +87,23 @@ def list_directory(path=".", detailed=False):
             return
         
         if detailed:
-            # Подробный вывод
-            total_blocks = 0
-            for item in items:
-                item_path = os.path.join(abs_path, item)
-                try:
-                    total_blocks += os.stat(item_path).st_blocks
-                except:
-                    pass
-            
-            print(f"total {total_blocks // 2}")  # Блоки по 512 байт
-            
             for item in items:
                 item_path = os.path.join(abs_path, item)
                 print(get_detailed_info(item_path, item))
         else:
-            # Простой вывод (по колонкам)
             max_length = max(len(item) for item in items) + 2
-            terminal_width = 80  # Стандартная ширина терминала
+            terminal_width = 80
             
-            # Вычисляем количество колонок
-            num_columns = terminal_width // max_length
-            if num_columns == 0:
-                num_columns = 1
+            columns_num = terminal_width // max_length
+            if columns_num == 0:
+                columns_num = 1
             
-            # Выводим файлы в колонках
             for i, item in enumerate(items):
                 print(item.ljust(max_length), end='')
-                if (i + 1) % num_columns == 0:
+                if (i + 1) % columns_num == 0:
                     print()
             
-            # Если последняя строка не полная, добавляем перенос
-            if len(items) % num_columns != 0:
+            if len(items) % columns_num != 0:
                 print()
                 
     except PermissionError:
@@ -129,20 +115,16 @@ def parse_ls_command(user_input):
     """Парсит команду ls и возвращает путь и флаги"""
     parts = user_input.strip().split()
     
-    # Убираем 'ls' из начала команды если есть
-    if parts and parts[0] == 'ls':
+    if parts[0] == 'ls':
         parts = parts[1:]
-
-    path = "."  # путь по умолчанию
-    detailed = False  # флаг подробного вывода
-    
+    path = "."
+    detailed = False
     for part in parts:
         if part.startswith('-'):
-            # Обрабатываем флаги
             if part == '-l':
                 detailed = True
             else:
-                raise Undefined_command_error("Неизвестная опция для ls")
+                raise IncorrectCommandUsing(f"Неизвестная опция для ls: '{part}'")
         else:
             path = part
     

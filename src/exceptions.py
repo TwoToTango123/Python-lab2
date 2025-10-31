@@ -1,6 +1,6 @@
-class Undefined_command_error(Exception):
+class UndefinedCommandError(Exception):
     '''Ошибка при неизвестной команде'''
     pass
-class Incorrect_command_using(Exception):
+class IncorrectCommandUsing(Exception):
     '''Ошибка при неизвестной команде'''
     pass

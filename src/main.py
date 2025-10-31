@@ -1,5 +1,5 @@
-from ls import *
-from interactive_mode import *
+from src.ls import *
+from src.interactive_mode import *
 def main():
     interactive_mode()
 

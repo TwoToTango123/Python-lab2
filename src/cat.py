@@ -1,17 +1,8 @@
 import os
-import logging
-from cd import expand_path
-from exceptions import *
+from src.cd import expand_path
+from src.exceptions import *
+from src.logger import *
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('shell.log', encoding='utf-8'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger('cat_command')
 def cat_file(file_path):
     try:
         expanded_path = expand_path(file_path)
@@ -19,13 +10,13 @@ def cat_file(file_path):
         # Проверка существования
         if not os.path.exists(expanded_path):
             print(f"cat: {file_path}: No such file or directory")
-            logger.error(f"Failed cat attempt: {file_path} -> {expanded_path} - File not found")
+            logger.error(f"Failed cat attempt: {file_path} - File not found")
             return False
         
         # Проверка что это файл, а не директория
         if os.path.isdir(expanded_path):
             print(f"cat: {file_path}: Is a directory")
-            logger.error(f"Failed cat attempt: {file_path} -> {expanded_path} - Is a directory")
+            logger.error(f"Failed cat attempt: {file_path} - Is a directory")
             return False
         
         # Чтение и вывод содержимого
@@ -45,5 +36,5 @@ def parse_cat_command(user_input):
     parts = user_input.strip().split()
     
     if len(parts) < 2:
-        raise Incorrect_command_using("Ошибка: cat требует указания файла")
+        raise IncorrectCommandUsing("cat требует указания файла")
     return parts[1]
