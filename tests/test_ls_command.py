@@ -8,7 +8,6 @@ from src.ls import (
     get_file_type,
     get_permissions,
     format_size,
-    get_detailed_info,
     list_directory,
     parse_ls_command
 )

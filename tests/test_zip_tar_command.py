@@ -1,10 +1,7 @@
-import pytest
 import os
 import sys
-from unittest.mock import patch, MagicMock
-
+from unittest.mock import patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-
 from src.zip_tar import (
     create_zip, extract_zip, create_tar, extract_tar,
     parse_zip_command, parse_unzip_command, parse_tar_command, parse_untar_command

@@ -6,7 +6,6 @@ from src.cd import (
     expand_path,
     change_directory,
     parse_cd_command,
-    format_date
 )
 
 class TestExpandPath:
